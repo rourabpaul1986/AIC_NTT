@@ -27,5 +27,8 @@ This repository contains a Python-based fault injection framework designed to ev
 Run the simulation using the command line:
 
 ```bash
-python main.py -s <samples> -f <fault_bits> -a <application> \
+python full_AIC_NTT.py -s <samples> -f <fault_bits> -a <application> \
+               -i <injection_type> -m <mode> -c <chunks> [-v]
+
+python partial_AIC_NTT.py -s <samples> -f <fault_bits> -a <application> \
                -i <injection_type> -m <mode> -c <chunks> [-v]
