@@ -59,8 +59,7 @@ entity NTTCore is
 
     NO_BFU         : natural := 0;
 
-    -- Derived/explicit generics:
-    -- (ADDR_WIDTH is the width for internal bram addresses used for read/write)
+
     ADDR_WIDTH     : natural := clog2((NUM_POLY_MEMS * (2 ** LOGN)) / 2 / PE)
   );
   port (
@@ -147,15 +146,10 @@ architecture rtl of NTTCore is
     return res;
   end function idx_word_flat;
 
-  -- pack/unpack helpers (simple implementations)
-  -- (Note: in real code you'd write robust pack/unpack procedures)
+
 begin
 
-  -- Pack/Unpack connections between external flattened RAM ports and internal signals:
-  -- ram_rdata_flat -> internal use (read operands for BF or PolyArith)
-  -- Here we do not expand every element; assume submodules accept flattened buses.
 
-  -- Latch rom_base_addr
   process(clk)
   begin
     if rising_edge(clk) then
@@ -163,8 +157,7 @@ begin
     end if;
   end process;
 
-  -- forward_internal: emulate SV behavior (shiftreg for unified case)
-  -- For simplicity, provide a single-cycle registration (submodules may expect additional delays)
+
   process(clk)
   begin
     if rising_edge(clk) then
@@ -193,8 +186,7 @@ begin
   end process;
 
   --------------------------------------------------------------------
-  -- Component declarations (shells). You must provide VHDL implementations
-  -- for these modules with matching generics/ports.
+
   --------------------------------------------------------------------
   component AddrGen
     generic (
