@@ -6,37 +6,33 @@ entity error_emulator is
     port (
         clk      : in  std_logic;
         reset    : in  std_logic;
-
-        fifo_in  : in  std_logic_vector(31 downto 0);
-        data_in  : in  std_logic_vector(11 downto 0);
-        data_out : out std_logic_vector(11 downto 0)
+        fifo_rd_en    : in  std_logic;
+        no_fault  : in  std_logic_vector(2 downto 0);
+        fifo_out  : in  std_logic_vector(31 downto 0);
+        data_in  : in  std_logic_vector(15 downto 0); --original output form mul/adder/sub
+        data_out : out std_logic_vector(15 downto 0) --fault injected dummy output
     );
 end entity error_emulator;
 
 architecture rtl of error_emulator is
-
-    signal data_reg : std_logic_vector(11 downto 0);
-
+    --signal data_reg : std_logic_vector(15 downto 0);
+    signal data_reg : std_logic_vector(15 downto 0):=(others => '1');
 begin
 
-    process(clk)
+
+       gen_chunks : for i in 0 to 7 generate
+        begin
+            data_reg(to_integer(unsigned(fifo_out(i*4+3 downto i*4)))) <= '0';
+        end generate;
+
+        --data_reg <= temp;
+ 
+
+    selective_and : for i in 0 to data_in'length-1 generate
     begin
-        if rising_edge(clk) then
-            if reset = '1' then
-                data_reg <= (others => '0');
-            else
-                -- Default behavior: pass-through
-                data_reg <= data_in;
+    data_out(i) <= not data_in(i) when data_reg(i) = '0'
+                   else data_in(i);
+    end generate;
 
-                -- Placeholder for error / fault emulation logic
-                -- Example (commented):
-                -- if fifo_in(0) = '1' then
-                --     data_reg <= data_in xor "000000000001";
-                -- end if;
-            end if;
-        end if;
-    end process;
-
-    data_out <= data_reg;
 
 end architecture rtl;
